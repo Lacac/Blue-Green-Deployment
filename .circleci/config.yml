@@ -6,6 +6,28 @@ orbs:
 
 jobs:
 
+  build-docker: 
+    environment: 
+      IMAGE_NAME: laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}                 
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    working_directory: ~/blue-green-test
+    steps:
+      - checkout
+      - run: 
+          name: check the IMAGE_NAME
+          command: 
+            pwd
+            echo $IMAGE_NAME
+      # - setup_remote_docker
+      # - run:
+      #     name: Build docker image
+      #     command: |
+      #       docker build -t $IMAGE_NAME .
+      #       echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      #       docker push $IMAGE_NAME
+
+
   deploy-k8s:
     docker: 
       - image: 'cimg/python:3.10'
@@ -50,5 +72,5 @@ workflows:
   default:
     jobs:
       # - lint
-      # - build-docker
+      - build-docker
       - deploy-k8s

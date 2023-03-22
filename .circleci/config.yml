@@ -10,7 +10,10 @@ jobs:
     parameters:
       docker_image:
         type: string
-        default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'               
+        default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'
+      workflow_id:
+        type: string
+        default: '${CIRCLE_WORKFLOW_ID:0:7}'          
     docker:
       - image: circleci/buildpack-deps:stretch
     working_directory: ~/blue-green-test
@@ -21,6 +24,15 @@ jobs:
           command: |
             pwd
             echo << parameters.docker_image >>
+      - run: 
+          name: create main.py file
+          command: |
+            cat main-test.py | sed "s|ID|<< parameters.workflow_id >>|g" > main.py
+      - run: 
+          name: Test result
+          command: |
+            ls
+            cat main.py
       # - setup_remote_docker
       # - run:
       #     name: Build docker image
@@ -55,6 +67,7 @@ jobs:
       - run: 
           name: Test result
           command: |
+            ls
             cat deployment.yml
             cat service.yml
       # - aws-eks/update-kubeconfig-with-authenticator:
@@ -69,6 +82,8 @@ jobs:
       #     get-rollout-status: true
       #     resource-file-path: service.yml
       #     show-kubectl-command: true
+
+
 
 workflows:
   default:

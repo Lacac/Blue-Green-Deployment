@@ -95,4 +95,6 @@ workflows:
     jobs:
       # - lint
       - build-docker
-      - deploy-k8s
+      - deploy-k8s:
+          requires: 
+            - build-docker

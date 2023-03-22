@@ -16,9 +16,9 @@ jobs:
       - checkout
       - run: 
           name: check the IMAGE_NAME
-          command: 
+          command: |
             pwd
-            echo "$IMAGE_NAME"
+            echo $IMAGE_NAME
       # - setup_remote_docker
       # - run:
       #     name: Build docker image

@@ -33,13 +33,13 @@ jobs:
           command: |
             ls
             cat main.py
-      # - setup_remote_docker
-      # - run:
-      #     name: Build docker image
-      #     command: |
-      #       docker build -t << parameters.docker_image >> .
-      #       echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-      #       docker push << parameters.docker_image >>
+      - setup_remote_docker
+      - run:
+          name: Build docker image
+          command: |
+            docker build -t << parameters.docker_image >> .
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push << parameters.docker_image >>
 
 
   deploy-k8s:
@@ -70,18 +70,23 @@ jobs:
             ls
             cat deployment.yml
             cat service.yml
-      # - aws-eks/update-kubeconfig-with-authenticator:
-      #     cluster-name: << parameters.cluster-name >>
-      #     install-kubectl: true
-      # - kubernetes/create-or-update-resource:
-      #     get-rollout-status: true
-      #     resource-file-path: deployment.yml
-      #     resource-name: deployment/app
-      #     show-kubectl-command: true
-      # - kubernetes/create-or-update-resource:
-      #     get-rollout-status: true
-      #     resource-file-path: service.yml
-      #     show-kubectl-command: true
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: << parameters.cluster-name >>
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: deployment.yml
+          resource-name: deployment/app
+          show-kubectl-command: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: service.yml
+          show-kubectl-command: true
+
+      # - run: 
+      #     name: 
+      #     command: |
+      #       kubectl get nodes -o wide | awk '{if(NR>1)print $7}'
 
 
 

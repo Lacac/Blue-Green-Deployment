@@ -7,8 +7,10 @@ orbs:
 jobs:
 
   build-docker: 
-    environment: 
-      IMAGE_NAME: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'                 
+    parameters:
+      docker_image:
+        type: string
+        default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'               
     docker:
       - image: circleci/buildpack-deps:stretch
     working_directory: ~/blue-green-test
@@ -18,14 +20,14 @@ jobs:
           name: check the IMAGE_NAME
           command: |
             pwd
-            echo $IMAGE_NAME
+            echo << parameters.docker_image >>
       # - setup_remote_docker
       # - run:
       #     name: Build docker image
       #     command: |
-      #       docker build -t $IMAGE_NAME .
+      #       docker build -t << parameters.docker_image >> .
       #       echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-      #       docker push $IMAGE_NAME
+      #       docker push << parameters.docker_image >>
 
 
   deploy-k8s:

@@ -17,7 +17,10 @@ jobs:
       - run: 
           name:
           command: |
-            curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
+            a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
+            a=$(expr $a + 1)
+            echo "a=$a"
+            echo a
   # build-docker: 
   #   parameters:
   #     docker_image:

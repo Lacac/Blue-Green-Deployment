@@ -10,14 +10,15 @@ jobs:
       - image: 'cimg/python:3.10'
     steps:
       - checkout
-      - parameters:
-          number:
-            type: integer
-            default: curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
+      # - parameters:
+      #     number:
+      #       type: integer
+      #       default: curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
       - run: 
           name:
           command: |
-            echo <<parameters.number>>
+            # echo <<parameters.number>>
+            curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
   # build-docker: 
   #   parameters:
   #     docker_image:

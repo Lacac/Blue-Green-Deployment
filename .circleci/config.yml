@@ -39,6 +39,10 @@ jobs:
     working_directory: ~/blue-green-test
     steps:
       - checkout
+      - run: 
+          name: current version of kvdb
+          command: |
+            curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
       - run:
           name: update value of version to kvdb
           command: |
@@ -50,19 +54,19 @@ jobs:
           name: create main.py file
           command: |
             cat main-test.py | sed "s|ID|<< parameters.workflow_id >>|g" > main.py
-      # - run: 
-      #     name: Test result
-      #     command: |
-      #       ls
-      #       cat main.py
+      - run: 
+          name: Test result
+          command: |
+            ls
+            cat main.py
       - setup_remote_docker
       - run:
           name: Build docker image
           command: |
             a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
-            docker build -t '<< parameters.docker_image >>:$a' .
+            docker build -t << parameters.docker_image >>:$a .
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push '<< parameters.docker_image >>:$a'
+            docker push << parameters.docker_image >>:$a
 
 
   # deploy-k8s:
@@ -73,26 +77,28 @@ jobs:
   #       description: Name of the EKS cluster
   #       type: string
   #       default: 'ngocht-eks'
-  #     workflow_id:
-  #       type: string
-  #       default: '${CIRCLE_WORKFLOW_ID:0:7}'
+  # #     workflow_id:
+  # #       type: string
+  # #       default: '${CIRCLE_WORKFLOW_ID:0:7}'
   #     docker_image:
   #       type: string
-  #       default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'
+  #       default: 'laclac0901/hello'
   #   steps: 
   #     - checkout  
   #     - run: 
   #         name: create deployment.yml & service.yml file
   #         command: |
-  #           cat deployment-test.yml | sed "s|DOCKER_IMAGE|<< parameters.docker_image >>|g" > deployment-1.yml
-  #           cat deployment-1.yml | sed "s|ID|<< parameters.workflow_id >>|g" > deployment.yml
-  #           cat service-test.yml | sed "s|ID|<< parameters.workflow_id >>|g" > service.yml
+  #           a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
+  #           cat deployment-test.yml | sed "s|DOCKER_IMAGE|<< parameters.docker_image >>:$a|g" > deployment-1.yml
+  #           cat deployment-1.yml | sed "s|ID|$a|g" > deployment.yml
+  #           cat service-test.yml | sed "s|ID|$a|g" > service.yml
   #     - run: 
   #         name: Test result
   #         command: |
   #           ls
   #           cat deployment.yml
   #           cat service.yml
+
   #     - aws-eks/update-kubeconfig-with-authenticator:
   #         cluster-name: << parameters.cluster-name >>
   #         install-kubectl: true

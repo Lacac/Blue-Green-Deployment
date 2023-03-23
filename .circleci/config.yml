@@ -30,7 +30,7 @@ jobs:
     parameters:
       docker_image:
         type: string
-        default: 'laclac0901/hello'
+        default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'
       workflow_id:
         type: string
         default: '${CIRCLE_WORKFLOW_ID:0:7}'          
@@ -43,13 +43,13 @@ jobs:
           name: current version of kvdb
           command: |
             curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
-      - run:
-          name: update value of version to kvdb
-          command: |
-            a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
-            a=$(expr $a + 1)
-            echo "a=$a"
-            curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file -d $a
+      # - run:
+      #     name: update value of version to kvdb
+      #     command: |
+      #       a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
+      #       a=$(expr $a + 1)
+      #       echo "a=$a"
+      #       curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file -d $a
       - run: 
           name: create main.py file
           command: |
@@ -64,9 +64,9 @@ jobs:
           name: Build docker image
           command: |
             a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
-            docker build -t << parameters.docker_image >>:$a .
+            docker build -t << parameters.docker_image >> .
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push << parameters.docker_image >>:$a
+            docker push << parameters.docker_image >>
 
 
   # deploy-k8s:

@@ -6,8 +6,8 @@ orbs:
 
 jobs:
   test: 
-    docker:
-      image: 'cimg/python:3.10'
+    docker: 
+      - image: 'cimg/python:3.10'
     steps:
       - checkout
       - parameters:

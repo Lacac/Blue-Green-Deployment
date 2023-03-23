@@ -20,6 +20,7 @@ jobs:
             a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
             a=$(expr $a + 1)
             echo "a=$a"
+            echo $a
             curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file -d $a
             curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
       - run: 

@@ -15,13 +15,18 @@ jobs:
       #       type: integer
       #       default: curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
       - run: 
-          name:
+          name: Test kvdb
           command: |
             a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
             a=$(expr $a + 1)
             echo "a=$a"
             curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file -d $a
             curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
+      - run: 
+          name: aaaaa
+          command: |
+            echo $a
+
   # build-docker: 
   #   parameters:
   #     docker_image:

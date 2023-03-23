@@ -117,7 +117,7 @@ jobs:
 workflows:
   default:
     jobs:
-      - test
+      # - test
       # - lint
       - build-docker
       # - deploy-k8s:

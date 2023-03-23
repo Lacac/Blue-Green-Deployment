@@ -17,7 +17,6 @@ jobs:
       - run: 
           name:
           command: |
-            # echo <<parameters.number>>
             curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
   # build-docker: 
   #   parameters:

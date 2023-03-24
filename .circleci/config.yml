@@ -109,7 +109,7 @@ jobs:
             PORT=$(kubectl get service app -o=jsonpath='{.spec.ports[0].nodePort}')
             echo $PORT
 
-            URL='http://$EXTERNAL_IP:$PORT'
+            URL='http://'$EXTERNAL_IP':'$PORT
             echo $URL
 
 

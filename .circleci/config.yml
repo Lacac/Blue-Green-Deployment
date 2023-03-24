@@ -22,6 +22,35 @@ jobs:
             echo "a=$a"
             curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file -d $a
 
+  lint: 
+    docker: 
+      - image: circleci/python:3.6.7-stretch
+    steps: 
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - run: 
+          name: install hadolint 
+          command: | 
+            sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.7.0/hadolint-Linux-x86_64
+            sudo chmod +x /bin/hadolint
+      - run: 
+          name: linting dockerfile
+          command: |
+            . venv/bin/activate
+            make lint
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
   build-docker: 
     parameters:
       docker_image:
@@ -120,8 +149,10 @@ workflows:
   default:
     jobs:
       - update-value-kvdb 
-      # - lint
-      - build-docker
+      - lint
+      - build-docker:
+          requires:
+            - lint
       - deploy-k8s:
           requires: 
             - update-value-kvdb

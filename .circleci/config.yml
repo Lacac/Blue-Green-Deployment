@@ -124,6 +124,7 @@ workflows:
       - update-value-kvdb 
       # - lint
       # - build-docker
-      - deploy-k8s
-      #     requires: 
+      - deploy-k8s:
+          requires: 
+            - update-value-kvdb
       #       - build-docker

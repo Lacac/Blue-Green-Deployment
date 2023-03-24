@@ -90,7 +90,7 @@ jobs:
           name: create deployment.yml & service.yml file
           command: |
             a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
-            cat deployment-1.yml | sed "s|ID|$a|g" > deployment.yml
+            cat deployment-test.yml | sed "s|ID|$a|g" > deployment.yml
       - run: 
           name: Test result
           command: |

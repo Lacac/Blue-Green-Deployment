@@ -97,13 +97,21 @@ jobs:
       #     resource-file-path: service.yml
       #     resource-name: service/app
       #     show-kubectl-command: true
+
       - kubernetes/install-kubectl
       - run: 
-          name: 
+          name: get the EXTERNAL_IP
           command: |
             kubectl get nodes -o wide
-            a=$(kubectl get nodes -o wide | awk '{if(NR>1)print $7}')
-            echo $a
+            EXTERNAL_IP=$(kubectl get nodes -o wide | awk '{if(NR>1)print $7}')
+            echo $EXTERNAL_IP
+      - run:
+          name: get the PORT
+          command: |
+            PORT=$(kubectl get service app -o=jsonpath='{.spec.ports[0].nodePort}')
+            echo $PORT
+
+
     
 
 

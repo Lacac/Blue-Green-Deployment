@@ -148,12 +148,12 @@ jobs:
 workflows:
   default:
     jobs:
-      - update-value-kvdb 
+      # - update-value-kvdb 
       - lint
-      - build-docker:
-          requires:
-            - lint
-      - deploy-k8s:
-          requires: 
-            - update-value-kvdb
-            - build-docker
+      # - build-docker:
+      #     requires:
+      #       - lint
+      # - deploy-k8s:
+      #     requires: 
+      #       - update-value-kvdb
+      #       - build-docker

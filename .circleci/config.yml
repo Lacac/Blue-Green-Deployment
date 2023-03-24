@@ -5,53 +5,53 @@ orbs:
   kubernetes: circleci/kubernetes@1.3.1
 
 jobs:
-  # update-value-kvdb: 
-  #   docker: 
-  #     - image: 'cimg/python:3.10'
-  #   steps:
-  #     - checkout
-  #     - run: 
-  #         name: current version of kvdb
-  #         command: |
-  #           curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
-  #     - run: 
-  #         name: Update value kvdb - version
-  #         command: |
-  #           a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
-  #           a=$(expr $a + 1)
-  #           echo "a=$a"
-  #           curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file -d $a
+  update-value-kvdb: 
+    docker: 
+      - image: 'cimg/python:3.10'
+    steps:
+      - checkout
+      - run: 
+          name: current version of kvdb
+          command: |
+            curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file
+      - run: 
+          name: Update value kvdb - version
+          command: |
+            a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
+            a=$(expr $a + 1)
+            echo "a=$a"
+            curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file -d $a
 
-  # build-docker: 
-  #   parameters:
-  #     docker_image:
-  #       type: string
-  #       default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'
-  #     workflow_id:
-  #       type: string
-  #       default: '${CIRCLE_WORKFLOW_ID:0:7}'          
-  #   docker:
-  #     - image: circleci/buildpack-deps:stretch
-  #   working_directory: ~/blue-green-test
-  #   steps:
-  #     - checkout
-  #     - run: 
-  #         name: create main.py file
-  #         command: |
-  #           cat main-test.py | sed "s|ID|<< parameters.workflow_id >>|g" > main.py
-  #     - run: 
-  #         name: Test result
-  #         command: |
-  #           ls
-  #           cat main.py
-  #     - setup_remote_docker
-  #     - run:
-  #         name: Build docker image
-  #         command: |
-  #           a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
-  #           docker build -t << parameters.docker_image >> .
-  #           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-  #           docker push << parameters.docker_image >>
+  build-docker: 
+    parameters:
+      docker_image:
+        type: string
+        default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'
+      workflow_id:
+        type: string
+        default: '${CIRCLE_WORKFLOW_ID:0:7}'          
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    working_directory: ~/blue-green-test
+    steps:
+      - checkout
+      - run: 
+          name: create main.py file
+          command: |
+            cat main-test.py | sed "s|ID|<< parameters.workflow_id >>|g" > main.py
+      - run: 
+          name: Test result
+          command: |
+            ls
+            cat main.py
+      - setup_remote_docker
+      - run:
+          name: Build docker image
+          command: |
+            a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
+            docker build -t << parameters.docker_image >> .
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push << parameters.docker_image >>
 
 
   deploy-k8s:
@@ -62,45 +62,42 @@ jobs:
         description: Name of the EKS cluster
         type: string
         default: 'ngocht-eks'
-  #     workflow_id:
-  #       type: string
-  #       default: '${CIRCLE_WORKFLOW_ID:0:7}'
       docker_image:
         type: string
         default: 'laclac0901/hello:${CIRCLE_WORKFLOW_ID:0:7}'
     steps: 
       - checkout  
-      # - run: 
-      #     name: create deployment.yml & service.yml file
-      #     command: |
-      #       a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
-      #       cat deployment-test.yml | sed "s|DOCKER_IMAGE|<< parameters.docker_image >>|g" > deployment-1.yml
-      #       cat deployment-1.yml | sed "s|ID|$a|g" > deployment.yml
-      #       cat service-test.yml | sed "s|ID|$a|g" > service.yml
-      # - run: 
-      #     name: Test result
-      #     command: |
-      #       ls
-      #       cat deployment.yml
-      #       cat service.yml
+      - run: 
+          name: create deployment.yml & service.yml file
+          command: |
+            a=$(curl --insecure https://kvdb.io/Df3HQppKnzXR2UABK98gC2/inventory_file)
+            cat deployment-test.yml | sed "s|DOCKER_IMAGE|<< parameters.docker_image >>|g" > deployment-1.yml
+            cat deployment-1.yml | sed "s|ID|$a|g" > deployment.yml
+            cat service-test.yml | sed "s|ID|$a|g" > service.yml
+      - run: 
+          name: Test result
+          command: |
+            ls
+            cat deployment.yml
+            cat service.yml
 
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: << parameters.cluster-name >>
           install-kubectl: true
-      # - kubernetes/create-or-update-resource:
-      #     get-rollout-status: true
-      #     resource-file-path: deployment.yml
-      #     resource-name: deployment/app
-      #     show-kubectl-command: true
-      # - kubernetes/create-or-update-resource:
-      #     get-rollout-status: true
-      #     resource-file-path: service.yml
-      #     resource-name: service/app
-      #     show-kubectl-command: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: deployment.yml
+          resource-name: deployment/app
+          show-kubectl-command: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: service.yml
+          resource-name: service/app
+          show-kubectl-command: true
 
       - kubernetes/install-kubectl
       - run: 
-          name: get the EXTERNAL_IP
+          name: get the URL
           command: |
             kubectl get nodes -o wide
             EXTERNAL_IP=$(kubectl get nodes -o wide | awk '{if(NR>1)print $7}')
@@ -112,21 +109,13 @@ jobs:
             URL='http://'$EXTERNAL_IP':'$PORT
             echo $URL
 
-
-
-
-    
-
-
-
 workflows:
   default:
     jobs:
-      # - update-value-kvdb 
-      # # - lint
-      # - build-docker
-      # - deploy-k8s:
-      #     requires: 
-      #       - update-value-kvdb
-      #       - build-docker
-      - deploy-k8s
+      - update-value-kvdb 
+      # - lint
+      - build-docker
+      - deploy-k8s:
+          requires: 
+            - update-value-kvdb
+            - build-docker

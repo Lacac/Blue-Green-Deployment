@@ -105,11 +105,14 @@ jobs:
             kubectl get nodes -o wide
             EXTERNAL_IP=$(kubectl get nodes -o wide | awk '{if(NR>1)print $7}')
             echo $EXTERNAL_IP
-      - run:
-          name: get the PORT
-          command: |
+
             PORT=$(kubectl get service app -o=jsonpath='{.spec.ports[0].nodePort}')
             echo $PORT
+
+            URL='http://$EXTERNAL_IP:$PORT'
+            echo $URL
+
+
 
 
     

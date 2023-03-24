@@ -99,7 +99,7 @@ jobs:
 
       - run: 
           name: Update file yaml
-          command:
+          command: |
             kubectl apply -f deployment.yml --force
             kubectl apply -f service.yml
 

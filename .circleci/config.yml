@@ -84,18 +84,25 @@ jobs:
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: << parameters.cluster-name >>
           install-kubectl: true
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: deployment.yml
-          resource-name: deployment/app
-          show-kubectl-command: true
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: service.yml
-          resource-name: service/app
-          show-kubectl-command: true
+      # - kubernetes/create-or-update-resource:
+      #     get-rollout-status: true
+      #     resource-file-path: deployment.yml
+      #     resource-name: deployment/app
+      #     show-kubectl-command: true
+      # - kubernetes/create-or-update-resource:
+      #     get-rollout-status: true
+      #     resource-file-path: service.yml
+      #     resource-name: service/app
+      #     show-kubectl-command: true
 
       - kubernetes/install-kubectl
+
+      - run: 
+          name: Update file yaml
+          command:
+            kubectl apply -f deployment.yml --force
+            kubectl apply -f service.yml
+
       - run: 
           name: get the URL
           command: |
